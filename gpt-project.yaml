@@ -1,0 +1,85 @@
+project:
+  id: prisletaren
+  name: Prisletaren
+  description: Identifiera fysiska produkter och jämför verifierbara svenska totalpriser inklusive frakt.
+  author: Prisletaren-projektet
+  repository: https://github.com/erland/gpt-prisletaren
+instructions:
+  canonical: src/canonical/instructions.md
+structure:
+  conversation_starters:
+    path: src/conversation-starters
+  runtime_policy:
+    path: src/runtime-policy
+  schemas:
+    path: src/schemas
+  templates:
+    path: src/templates
+knowledge_architecture:
+  canonical_root: src/knowledge
+capabilities:
+  requirements:
+    web:
+      level: required
+    code_execution:
+      level: optional
+workspace_state:
+  persistent: false
+tools:
+  definitions: []
+skills:
+  definitions:
+    - id: prisjamforelse
+      name: prisjamforelse
+      description: Hitta rätt produktvariant och jämför aktuella totalpriser inklusive frakt i Sverige.
+      references:
+        - src/canonical/contracts.md
+      assets: []
+      scripts: []
+runtime:
+  primary: none
+  chat_zip:
+    enabled: true
+    start_here_template: src/runtime/START-HERE.md
+  plugin:
+    enabled: true
+    interface:
+      displayName: Prisletaren
+      shortDescription: Jämför priser med frakt
+      longDescription: Identifierar produkter och jämför tillgängliga svenska butikserbjudanden med verifierat eller beräknat totalpris inklusive frakt.
+      developerName: Prisletaren-projektet
+      category: Shopping
+      capabilities:
+        - Interactive
+      defaultPrompt: Hitta bästa verifierbara totalpris inklusive frakt för en produkt i Sverige.
+    layout:
+      manifest_file: plugin.json
+      skills: skills
+    templates:
+      readme: src/templates/README.plugin.md
+  custom_gpt:
+    enabled: false
+  claude:
+    enabled: false
+  claude_skills:
+    enabled: false
+  opencode:
+    enabled: false
+build_system:
+  targets:
+    - project
+    - chat_zip
+    - plugin
+  runtime_targets:
+    chat_zip:
+      runtime_id: chatgpt_chat
+      runtime_key: chat_zip
+      builder: chat
+      artifact_type: chat_zip
+      filename_pattern: "<project-id>-chat-<version>.zip"
+    plugin:
+      runtime_id: openai_plugin
+      runtime_key: plugin
+      builder: plugin
+      artifact_type: plugin_zip
+      filename_pattern: "<project-id>-plugin-<version>.zip"

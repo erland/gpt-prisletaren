@@ -41,3 +41,9 @@ Indikativa aggregatorpriser visas separat utan att markeras verifierade. Handlar
 
 ## Deklarativa runtime-mål (pågående förbättring)
 `build-system.json` deklarerar aktiva `chat_zip` och `plugin` och listar andra runtime-kandidater som inaktiva. `tools/build.py` validerar deklarationen och bevarar separata format och canonical-paritetskontroller. Detta är en projektspecifik kontraktsintegration, **inte** en fullständig import av GPT Byggarens canonical distributionsbyggare. Innan releaseklassning krävs kontroll av dess beroenden och en verifierad releasekörning. Kör `python -m unittest discover -s tests -v` och `python tools/build.py --version 0.5.0`.
+
+## GPT Byggarens canonical distributionsmotor (PR #3)
+
+`gpt-project.yaml` och `tools/upstream_gpt_byggaren/` används för ChatGPT Chat och OpenAI Plugin i CI och framtida releasebyggen. Upstream-validering, canonical-innehåll och pluginmetadata kontrolleras efter byggning. Se `docs/upstream-integration.md`. Den gamla `tools/build.py` behålls tillfälligt som regressionstest och är inte längre den planerade releasebyggaren.
+
+**Inga release-taggar har skapats.** Hostinstallerad pluginacceptans och butikskasseverifiering återstår innan produkten kan klassas som fullständigt releaseklar.
