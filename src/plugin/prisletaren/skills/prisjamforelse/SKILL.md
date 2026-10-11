@@ -42,3 +42,9 @@ Behöver webbsökning och möjlighet att öppna aktuella produktsidor. Kalkyl-/k
 - **Beställningsvara/förbeställning** får en separat grupp med ledtid om den är styrkt. Den får inte utses till vinnare bland lagerförda produkter. Skillnaden mellan beställningsvara och okänt saldo ska visas.
 - Visa gärna grupperna verifierad, beräknad, indikativ, beställningsvara och osäker; redovisa källor och kontrolltid, och säg när 5–10 relevanta erbjudanden inte hittades.
 - Reproducerbara offlineacceptanstester är fixtures, inte livepriskällor; återanvänd aldrig fixturepriser som om de vore aktuella.
+
+## Evidensgrind efter acceptanstesterna
+- För varje handlare: ange observerat pris, källa/URL, kontrolltid och om det är **butikens egen sida**, **aggregator** eller **okänt index**. Sidans publiceringsdatum, sökmotorns hämtningstid och faktisk observationstid är olika fält; de får inte förväxlas. Äldre än 24 timmar eller okänd faktisk observationstid får aldrig beskrivas som dagsverifierat pris.
+- Vid två motstridiga priser för samma MPN och säljare: redovisa konflikten och källornas tidpunkter; använd inte det lägre talet som verifierad vinnare innan en aktuell produktsida eller kassa har avgjort skillnaden. Ett aggregatorpris kan inte uppgradera butikens äldre/okända evidens.
+- Skilj mellan **verifierat butikserbjudande**, **beräknad frakt enligt tillämpligt butiksvillkor**, **indikativ aggregatorsumma** och **kassaverifierad totalsumma**. Butikens produktpris tillsammans med osäker frakt är inte ett verifierat totalpris. Ange kassaverifiering enbart om den faktiskt observerats för rätt leveransadress och leveransalternativ.
+- Om MPN eller EAN avviker, stoppa huvudrankningen för kandidaten tills identiteten har klarlagts. Om handlarsidan visar slutsålt, utgått eller beställningsvara ska detta övertrumfa ett äldre aggregatorsaldo.

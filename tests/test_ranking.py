@@ -34,6 +34,16 @@ class RankingTests(unittest.TestCase):
         self.assertEqual(classify_offer(IDENTITY, offer(shipping_price=-1))[0], 'uncertain')
     def test_unsupported_delivery_rejected(self):
         self.assertEqual(classify_offer(IDENTITY, offer(delivers_to_sweden=False))[0], 'rejected')
+    def test_conflicting_merchant_prices_not_verified(self):
+        self.assertEqual(classify_offer(IDENTITY, offer(conflicting_price_evidence=True))[0], 'uncertain')
+    def test_stale_observation_not_verified(self):
+        self.assertEqual(classify_offer(IDENTITY, offer(observed_at='2026-10-09T08:00:00+02:00'))[0], 'uncertain')
+    def test_recent_observation_can_be_verified(self):
+        self.assertEqual(classify_offer(IDENTITY, offer(observed_at='2026-10-11T08:30:00+02:00'))[0], 'verified')
+    def test_observation_missing_timezone_uncertain(self):
+        self.assertEqual(classify_offer(IDENTITY, offer(observed_at='2026-10-11T08:30:00'))[0], 'uncertain')
+    def test_aggregator_cannot_verify_conflict(self):
+        self.assertEqual(classify_offer(IDENTITY, offer(source_type='aggregator', conflicting_price_evidence=True))[0], 'uncertain')
     def test_no_source_uncertain(self):
         self.assertEqual(classify_offer(IDENTITY, offer(source_url=None))[0], 'uncertain')
     def test_aggregator_not_verified(self):
