@@ -188,19 +188,23 @@ def copy_portable_skill_modules(root: Path, cfg: dict, target: Path) -> list[str
 
 
 def bundle_distribution_engine(root: Path, destination: Path) -> None:
-    """Include the offline project generator in a runtime distribution."""
+    """Package the vendored upstream engine and project config as portable resources."""
     engine = destination / "distribution-engine"
     engine.mkdir(parents=True, exist_ok=True)
-    required = ("scripts/build_distributions.py", "scripts/lib/project_model.py", "gpt-project.yaml")
-    if any(not (root / relative).is_file() for relative in required):
+    vendor = root / "tools" / "upstream_gpt_byggaren"
+    required = (
+        vendor / "build_distributions.py",
+        vendor / "validate_distributions.py",
+        vendor / "lib" / "project_model.py",
+        root / "gpt-project.yaml",
+    )
+    if not all(p.is_file() for p in required):
         raise FileNotFoundError("Canonical distribution engine is incomplete")
     copy_file(root / "gpt-project.yaml", engine / "gpt-project.yaml")
-    for folder in ("scripts", "templates"):
-        for source_file in sorted((root / folder).rglob("*")):
-            if not source_file.is_file() or "__pycache__" in source_file.parts or source_file.suffix == ".pyc":
-                continue
-            relative = source_file.relative_to(root)
-            copy_file(source_file, engine / relative)
+    copy_tree_filtered(vendor, engine / "scripts")
+    templates = root / "src" / "templates"
+    if templates.exists():
+        copy_tree_filtered(templates, engine / "templates")
 
 
 def build_chat(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
