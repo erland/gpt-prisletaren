@@ -1,13 +1,16 @@
 import json
+import os
 import unittest
 import zipfile
 from pathlib import Path
 from tools.build import ROOT
 
-@unittest.skipUnless((ROOT/'dist'/'prisletaren-chat-0.5.0.zip').exists(), 'Run after canonical build')
+VERSION = os.environ.get("GITHUB_REF_NAME", "").removeprefix("v") if os.environ.get("GITHUB_REF_TYPE") == "tag" else json.loads((ROOT/"docs/project-status.json").read_text())["version"]
+
+@unittest.skipUnless((ROOT/'dist'/f'prisletaren-chat-{VERSION}.zip').exists(), 'Run after canonical build')
 class CanonicalOutputTests(unittest.TestCase):
     def test_chat_and_plugin_archives_created(self):
-        for name in ("prisletaren-chat-0.5.0.zip","prisletaren-plugin-0.5.0.zip"):
+        for name in (f"prisletaren-chat-{VERSION}.zip",f"prisletaren-plugin-{VERSION}.zip"):
             archive=ROOT/"dist"/name
             with self.subTest(name=name):
                 self.assertTrue(archive.is_file())
@@ -15,10 +18,10 @@ class CanonicalOutputTests(unittest.TestCase):
                     self.assertIsNone(z.testzip())
                     self.assertEqual(len(z.namelist()),len(set(z.namelist())))
     def test_chat_canonical(self):
-        with zipfile.ZipFile(ROOT/"dist"/"prisletaren-chat-0.5.0.zip") as z:
+        with zipfile.ZipFile(ROOT/"dist"/f"prisletaren-chat-{VERSION}.zip") as z:
             self.assertEqual(z.read("assistant/instructions.md"),(ROOT/"src/canonical/instructions.md").read_bytes())
     def test_plugin_canonical(self):
-        with zipfile.ZipFile(ROOT/"dist"/"prisletaren-plugin-0.5.0.zip") as z:
+        with zipfile.ZipFile(ROOT/"dist"/f"prisletaren-plugin-{VERSION}.zip") as z:
             self.assertIn((ROOT/"src/canonical/instructions.md").read_bytes(),z.read("skills/prisjamforelse/SKILL.md"))
             self.assertFalse(any(p.endswith("mcp.json") for p in z.namelist()))
             self.assertIn("plugin.json",z.namelist())

@@ -1,11 +1,12 @@
 """All peer distributions must preserve their shared canonical behavior."""
 import json
+import os
 import unittest
 import zipfile
 from pathlib import Path
 from tools.build import ROOT
 
-VERSION = "0.5.0"
+VERSION = os.environ.get("GITHUB_REF_NAME", "").removeprefix("v") if os.environ.get("GITHUB_REF_TYPE") == "tag" else json.loads((ROOT/"docs/project-status.json").read_text())["version"]
 EXPECTED = {
     "chat": ("assistant/instructions.md", "chatgpt_chat"),
     "plugin": ("skills/prisjamforelse/SKILL.md", "openai_plugin"),
