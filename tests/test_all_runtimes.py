@@ -35,7 +35,7 @@ class PeerRuntimeTests(unittest.TestCase):
                     self.assertIn(canonical.strip(), z.read(entry).decode("utf-8"))
                     self.assertIn("MANIFEST.json",z.namelist())
                     manifest=json.loads(z.read("MANIFEST.json"))
-                    self.assertEqual(manifest["runtime_id"],"prisletaren-"+runtime_id if runtime_id != "chatgpt_chat" else "prisletaren-chat")
+                    self.assertEqual(manifest["runtime_id"], "prisletaren-" + ({"chat":"chat","plugin":"plugin","custom-gpt":"custom-gpt","claude-project":"claude","claude-skills":"claude-skills","opencode":"opencode"}[runtime]))
                     self.assertFalse(any(x.endswith("mcp.json") for x in z.namelist()))
 
     @unittest.skipUnless((ROOT/"dist"/f"prisletaren-opencode-{VERSION}.zip").exists(), "Run after canonical build")
