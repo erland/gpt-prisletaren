@@ -19,12 +19,10 @@ class UpstreamBuilderGateTests(unittest.TestCase):
         self.assertIn('RUNTIME_BUILDERS', code)
         self.assertIn('build_runtime_target', code)
 
-    def test_do_not_claim_full_integration_without_schema(self):
-        # The current project must keep its proven local builder until a
-        # complete upstream YAML schema + templates have been integrated.
-        self.assertFalse((ROOT / "gpt-project.yaml").exists())
-        self.assertIn("project-specific builder", (ROOT / "tools" / "build.py").read_text())
-        validate_sources("0.5.0")
+    def test_full_schema_exists(self):
+        self.assertTrue((ROOT / 'gpt-project.yaml').is_file())
+        self.assertTrue((ROOT / 'src/templates/README.plugin.md').is_file())
+        validate_sources('0.5.0')
 
     def test_dependency_documented(self):
         self.assertIn("PyYAML", (ROOT / "requirements-build.txt").read_text())
