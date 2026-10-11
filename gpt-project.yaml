@@ -43,6 +43,9 @@ runtime:
     start_here_template: src/runtime/START-HERE.md
   plugin:
     enabled: true
+    layout:
+      manifest_file: plugin.json
+      skills: skills
     templates:
       readme: src/templates/README.plugin.md
   custom_gpt:
