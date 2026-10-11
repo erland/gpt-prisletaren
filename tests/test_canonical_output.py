@@ -1,3 +1,4 @@
+import json
 import unittest
 import zipfile
 from pathlib import Path
@@ -21,3 +22,6 @@ class CanonicalOutputTests(unittest.TestCase):
             self.assertIn((ROOT/"src/canonical/instructions.md").read_bytes(),z.read("skills/prisjamforelse/SKILL.md"))
             self.assertFalse(any(p.endswith("mcp.json") for p in z.namelist()))
             self.assertIn("plugin.json",z.namelist())
+            manifest=json.loads(z.read("plugin.json"))
+            self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["displayName"],"Prisletaren")
+            self.assertEqual(manifest["extensions"]["com.openai"]["interface"]["shortDescription"],"Jämför priser med frakt")
