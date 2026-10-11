@@ -23,5 +23,5 @@ jobs:
         run: python tools/upstream_gpt_byggaren/validate_distributions.py --project-root .
       - name: Verify canonical output contracts
         run: python -m unittest tests.test_canonical_output -v
-      - name: Verify all six runtime distribution contracts
+      - name: Verify all five runtime distribution contracts
         run: python -m unittest tests.test_all_runtimes -v
