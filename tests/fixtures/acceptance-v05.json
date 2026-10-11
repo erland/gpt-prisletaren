@@ -1,0 +1,16 @@
+{
+  "note": "Syntetiska testdata, inte historiska eller aktuella butikserbjudanden",
+  "identity": {"brand":"TestBrand","model":"T100","mpn":"T100-SE","attributes":{"color":"black"}},
+  "reference_time":"2026-10-11T09:00:00+02:00",
+  "base": {"brand":"TestBrand","model":"T100","mpn":"T100-SE","attributes":{"color":"black"},"condition":"new","currency":"SEK","vat_included":true,"delivers_to_sweden":true,"mandatory_fees":0,"merchant":"Testbutik","url":"https://example.com/p/t100","stock_status":"in_stock","checked_at":"2026-10-11T08:30:00+02:00","reference_time":"2026-10-11T09:00:00+02:00","source_url":"https://example.com/p/t100","price_source_verified":true,"fees_source_verified":true,"shipping_source_verified":true,"shipping_price":49,"product_price":1000,"source_type":"merchant","direct_merchant_page":true},
+  "cases": [
+    {"name":"verified","changes":{},"category":"verified","total":"1049"},
+    {"name":"aggregator","changes":{"source_type":"aggregator","source_url":"https://example.net/list","shipping_price":29,"aggregator_total_price":1029,"price_source_verified":false},"category":"indicative","total":"1029"},
+    {"name":"aggregator inconsistent","changes":{"source_type":"aggregator","source_url":"https://example.net/list","aggregator_total_price":999},"category":"uncertain","total":null},
+    {"name":"merchant unavailable overrides aggregator","changes":{"source_type":"aggregator","aggregator_total_price":1049,"merchant_availability":"unavailable"},"category":"rejected","total":null},
+    {"name":"order item","changes":{"stock_status":"order_item"},"category":"order_items","total":"1049"},
+    {"name":"preorder aggregator","changes":{"stock_status":"preorder","source_type":"aggregator","aggregator_total_price":1049},"category":"order_items","total":"1049"},
+    {"name":"unknown shipping","changes":{"shipping_price":null,"shipping_source_verified":false},"category":"uncertain","total":null},
+    {"name":"wrong mpn","changes":{"mpn":"OTHER"},"category":"rejected","total":null}
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "prisletaren",
+  "version": "0.5.0",
+  "description": "Identifierar en exakt produkt och jämför verifierade priser inklusive frakt för köp i Sverige.",
+  "author": {
+    "name": "Prisletaren-projektet"
+  },
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Prisletaren",
+        "shortDescription": "Jämför priser med frakt",
+        "longDescription": "Hitta en exakt produktvariant och jämför aktuella butikserbjudanden, leverans och totalpris i Sverige. Kräver tillgänglig webbsökning; priser garanteras inte om butiker inte kan verifieras.",
+        "developerName": "Prisletaren-projektet",
+        "category": "Shopping",
+        "capabilities": [
+          "Interactive"
+        ],
+        "defaultPrompt": "Hitta bästa verifierbara totalpris inklusive frakt för en produkt i Sverige."
+      }
+    }
+  }
+}
