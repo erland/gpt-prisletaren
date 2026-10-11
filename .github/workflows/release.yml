@@ -18,6 +18,24 @@ jobs:
         run: python tools/upstream_gpt_byggaren/build_distributions.py --project-root . --version "${GITHUB_REF_NAME#v}" --targets project,chat_zip,plugin
       - name: Validate canonical distributions
         run: python tools/upstream_gpt_byggaren/validate_distributions.py --project-root .
+      - name: Verify canonical archive contents and metadata
+        run: python -m unittest tests.test_canonical_output -v
+      - name: Verify delivery manifest and checksums
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          dist = Path('dist')
+          manifest = json.loads((dist/'DELIVERY-MANIFEST.json').read_text())
+          import os
+          assert manifest['version'] == os.environ['GITHUB_REF_NAME'].removeprefix('v'), 'Unexpected release version'
+          artifacts = manifest['artifacts']
+          for artifact in artifacts:
+              path = dist / artifact['file']
+              assert path.is_file(), f"Missing: {path}"
+              assert hashlib.sha256(path.read_bytes()).hexdigest() == artifact['sha256'], f"Wrong checksum: {path}"
+          assert (dist/'SHA256SUMS.txt').is_file()
+          PY
       - uses: softprops/action-gh-release@v2
         with:
           files: |
