@@ -58,18 +58,52 @@ runtime:
     templates:
       readme: src/templates/README.plugin.md
   custom_gpt:
-    enabled: false
+    enabled: true
+    instruction:
+      mode: identical
+      max_characters: 8000
+    knowledge:
+      strategy: prioritize
+      max_files: 20
+    builder:
+      runtime_contract: builder/runtime-contract.json
+    templates:
+      capabilities: src/templates/custom-capabilities.md
+      readme: src/templates/custom-readme.md
+      compatibility: src/templates/custom-compatibility.md
   claude:
-    enabled: false
+    enabled: true
+    project:
+      instructions: project/instructions.md
+      knowledge: project/knowledge
+      runtime_contract: project/runtime-contract.json
+    templates:
+      readme: src/templates/claude-readme.md
   claude_skills:
-    enabled: false
+    enabled: true
   opencode:
-    enabled: false
+    enabled: true
+    skills:
+      enabled: true
+      directory: .opencode/skills
+    layout:
+      instructions: AGENTS.md
+      knowledge: knowledge
+      tools: .opencode/tools
+      runtime_scripts: scripts
+      config: opencode.json
+      runtime_contract: runtime-contract.json
+    templates:
+      readme: src/templates/opencode-readme.md
 build_system:
   targets:
     - project
     - chat_zip
     - plugin
+    - custom_gpt
+    - claude_project
+    - claude_skills
+    - opencode
   runtime_targets:
     chat_zip:
       runtime_id: chatgpt_chat
@@ -83,3 +117,27 @@ build_system:
       builder: plugin
       artifact_type: plugin_zip
       filename_pattern: "<project-id>-plugin-<version>.zip"
+    custom_gpt:
+      runtime_id: chatgpt_custom
+      runtime_key: custom_gpt
+      builder: custom_gpt
+      artifact_type: custom_gpt_zip
+      filename_pattern: "<project-id>-custom-gpt-<version>.zip"
+    claude_project:
+      runtime_id: claude_project
+      runtime_key: claude
+      builder: claude
+      artifact_type: claude_project_zip
+      filename_pattern: "<project-id>-claude-project-<version>.zip"
+    claude_skills:
+      runtime_id: claude_skills
+      runtime_key: claude_skills
+      builder: claude_skills
+      artifact_type: claude_skills_zip
+      filename_pattern: "<project-id>-claude-skills-<version>.zip"
+    opencode:
+      runtime_id: opencode
+      runtime_key: opencode
+      builder: opencode
+      artifact_type: opencode_zip
+      filename_pattern: "<project-id>-opencode-<version>.zip"
