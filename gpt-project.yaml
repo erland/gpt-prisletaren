@@ -61,7 +61,7 @@ runtime:
     enabled: true
     instruction:
       mode: identical
-      max_characters: 8000
+      max_characters: 12000
     knowledge:
       strategy: prioritize
       max_files: 20
