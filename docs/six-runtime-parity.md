@@ -1,4 +1,4 @@
-# Runtimeparitet – sex jämbördiga distributioner
+# Runtimeparitet – fem jämbördiga distributioner
 
 Alla aktiva runtimepaket genereras från `src/canonical/instructions.md` via GPT Byggarens canonical byggare. Samtliga behåller identifiering av exakt produkt, källornas färskhet, osäker frakt, motstridiga priser och förbud mot fabricerade erbjudanden.
 
@@ -6,7 +6,6 @@ Alla aktiva runtimepaket genereras från `src/canonical/instructions.md` via GPT
 |---|---|---|
 | ChatGPT Chat | Chat ZIP och runtimekontrakt | Webbsökning behövs för aktuella priser |
 | OpenAI Plugin | Skills-first och pluginmanifest | Webbtillgång beror på ChatGPT-värdmiljön; ingen egen MCP |
-| ChatGPT Custom GPT | Builder-instruktioner, capability-fil och knowledge | Webbsökning måste vara tillgänglig/aktiverad |
 | Claude Project | Projektinstruktion och kontrakt | Aktuella webbkällor är kontoberoende |
 | Claude Skills | En separat prisjämförelseskill med kontrakt | Automatisk skillanvändning och webb beror på värdmiljön |
 | OpenCode | AGENTS.md, skill och runtimekontrakt | Extern webbåtkomst kräver faktiskt konfigurerade verktyg |
