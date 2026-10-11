@@ -2,7 +2,7 @@
 
 Prisjämförande svensk GPT för fysiska varor. Först identifieras exakt produktvariant; därefter hämtas aktuella erbjudanden med webbsökning och totalpriser jämförs med explicit verifierad frakt.
 
-## Vad finns i v0.2?
+## Funktioner i v0.5.0
 - Canonical assistentinstruktion och plattformsneutrala kontrakt i `src/canonical/`.
 - `prisletaren/ranking.py`: deterministiskt stöd för validering, separation av osäkra erbjudanden och sortering. **Ingen automatisk webbinhämtning ingår i denna modul**.
 - Tester utan extern åtkomst (`python -m unittest discover -s tests -v`).
@@ -16,7 +16,7 @@ Använd `src/runtime/chatgpt-chat.md` som instruktion i en chatt med fungerande 
 Se `docs/runtime-parity.md`. Prisletaren kan **inte** garantera aktuella priser när webbsökning/öppning av produktsidor saknas. Inga låtsade webbsökningar eller priser.
 
 ## Versionshantering
-Rekommenderad GitHub-repository: `prisletaren`. Pusha källkoden, skapa en tagg som `v0.1.0` för att bygga distributions-ZIP. Projekt-ZIP byggs separat av `tools/build.py`.
+Källprojekt: https://github.com/erland/gpt-prisletaren. GitHub Actions kör tester och ZIP-byggning på PR. Skapa inte release-taggen `v0.5.0` förrän releasekontrollerna är godkända.
 
 ## Livetest v0.2
 Se `docs/live-smoke-test-2026-10-11.md`. Produktmatchning och indexpriser kan kontrolleras, men 5–10 verifierade butikserbjudanden inklusive frakt har **inte** kunnat bekräftas i dessa stickprov.
@@ -35,6 +35,9 @@ Indikativa aggregatorpriser visas separat utan att markeras verifierade. Handlar
 
 `tools/build.py` skapar deterministiska ZIP-filer och validerar canonical-paritet, filintegritet och versionsöverensstämmelse. De tidigare 46 testerna och fyra nya byggtester passerar (50 totalt). CI kör tester och paketbygge; releaseworkflow hämtar versionsnummer från taggen.
 
-**Publiceringsstatus:** Ej publicerat. GitHub-konnektorn kan nå befintliga repon men saknar funktion för att skapa `erland/prisletaren`; repo gav 404 vid kontroll. När repo har skapats, pusha hela projekt-ZIP-innehållet (inte `dist/`) och kontrollera GitHub Actions innan release-taggen `v0.5.0` skapas.
+**Publiceringsstatus:** Källprojektet är importerat till `erland/gpt-prisletaren` via mergad PR #1. GitHub Actions CI för importen lyckades. Releaseworkflow har ännu inte testats med tagg.
 
 **Avvikelse mot GPT Byggaren:** Byggsystemet är än så länge projektspecifikt och använder inte GPT Byggarens fullständiga deklarativa canonical distributionsmotor (`build_system.runtime_targets`). Detta måste åtgärdas före full releaseklassning.
+
+## Deklarativa runtime-mål (pågående förbättring)
+`build-system.json` deklarerar aktiva `chat_zip` och `plugin` och listar andra runtime-kandidater som inaktiva. `tools/build.py` validerar deklarationen och bevarar separata format och canonical-paritetskontroller. Detta är en projektspecifik kontraktsintegration, **inte** en fullständig import av GPT Byggarens canonical distributionsbyggare. Innan releaseklassning krävs kontroll av dess beroenden och en verifierad releasekörning. Kör `python -m unittest discover -s tests -v` och `python tools/build.py --version 0.5.0`.
