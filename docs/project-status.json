@@ -2,7 +2,7 @@
   "project": "Prisletaren",
   "version": "0.5.0",
   "date": "2026-10-11",
-  "workflow_state": "github-ready-build-validation-pending-repository-creation",
+  "workflow_state": "post-import-declarative-runtime-contract-pr-open",
   "completed": [
     "idea-analysis",
     "canonical-contract",
@@ -24,18 +24,23 @@
     "deterministic-zip-build",
     "version-and-parity-gates",
     "build-contract-tests",
-    "local-ci-equivalent-tests-50"
+    "local-ci-equivalent-tests-50",
+    "github-repository-created",
+    "source-import-merged",
+    "github-actions-pr-ci-passed",
+    "declarative-runtime-target-contract",
+    "runtime-target-contract-tests"
   ],
   "pending": [
-    "create-github-repository-erland-prisletaren",
-    "publish-source-and-verify-actions",
     "github-release-tag-build",
     "canonical-gpt-byggaren-distribution-builder-integration",
     "merchant-level end-to-end checkout validation",
     "runtime-compatibility-verification",
     "release-readiness",
     "plugin-installed-host-acceptance-test",
-    "live-installed-host-retest-after-v0.5"
+    "live-installed-host-retest-after-v0.5",
+    "verify-new-pr-ci",
+    "integrate-full-canonical-distribution-engine-with-dependencies"
   ],
   "known_limitations": [
     "Manual live web discovery: no autonomous crawler/API",
@@ -44,7 +49,6 @@
     "No reliable live 5-10-row verified results yet",
     "Skill-only plugin saknar egen webbsökning och installerad hostacceptans är ej verifierad",
     "Shipping calculations from documented merchant conditions require manually verified applicability; no autonomous checkout",
-    "GitHub repository not created: available GitHub connector lacks create_repository",
     "Local build is project-specific and is not GPT Byggarens full canonical distribution engine"
   ]
 }
