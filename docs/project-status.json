@@ -2,7 +2,7 @@
   "project": "Prisletaren",
   "version": "0.5.0",
   "date": "2026-10-11",
-  "workflow_state": "post-import-declarative-runtime-contract-pr-open",
+  "workflow_state": "canonical-builder-dependencies-staged-validation-pending",
   "completed": [
     "idea-analysis",
     "canonical-contract",
@@ -29,7 +29,10 @@
     "source-import-merged",
     "github-actions-pr-ci-passed",
     "declarative-runtime-target-contract",
-    "runtime-target-contract-tests"
+    "runtime-target-contract-tests",
+    "upstream-builder-source-vendored",
+    "upstream-validator-source-vendored",
+    "upstream-dependency-import-tests"
   ],
   "pending": [
     "github-release-tag-build",
@@ -40,7 +43,9 @@
     "plugin-installed-host-acceptance-test",
     "live-installed-host-retest-after-v0.5",
     "verify-new-pr-ci",
-    "integrate-full-canonical-distribution-engine-with-dependencies"
+    "integrate-full-canonical-distribution-engine-with-dependencies",
+    "provide-full-gpt-project-yaml-and-runtime-templates",
+    "run-upstream-build-and-validate-distributions-in-ci"
   ],
   "known_limitations": [
     "Manual live web discovery: no autonomous crawler/API",
@@ -49,6 +54,7 @@
     "No reliable live 5-10-row verified results yet",
     "Skill-only plugin saknar egen webbsökning och installerad hostacceptans är ej verifierad",
     "Shipping calculations from documented merchant conditions require manually verified applicability; no autonomous checkout",
-    "Local build is project-specific and is not GPT Byggarens full canonical distribution engine"
+    "Local build is project-specific and is not GPT Byggarens full canonical distribution engine",
+    "Upstream canonical scripts vendored but not activated; missing gpt-project.yaml and runtime templates"
   ]
 }
