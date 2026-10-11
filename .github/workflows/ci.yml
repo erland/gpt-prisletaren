@@ -25,3 +25,11 @@ jobs:
         run: python -m unittest tests.test_canonical_output -v
       - name: Verify all five runtime distribution contracts
         run: python -m unittest tests.test_all_runtimes -v
+      - name: Simulate v0.6.0 tag packaging without publishing
+        run: python tools/upstream_gpt_byggaren/build_distributions.py --project-root . --version 0.6.0 --targets project,chat_zip,plugin,claude_project,claude_skills,opencode
+      - name: Verify release-version archive tests
+        env:
+          GITHUB_REF_TYPE: tag
+          GITHUB_REF_NAME: v0.6.0
+        run: |
+          python -m unittest tests.test_canonical_output tests.test_all_runtimes -v
