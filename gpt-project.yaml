@@ -43,6 +43,15 @@ runtime:
     start_here_template: src/runtime/START-HERE.md
   plugin:
     enabled: true
+    interface:
+      displayName: Prisletaren
+      shortDescription: Jämför priser med frakt
+      longDescription: Identifierar produkter och jämför tillgängliga svenska butikserbjudanden med verifierat eller beräknat totalpris inklusive frakt.
+      developerName: Prisletaren-projektet
+      category: Shopping
+      capabilities:
+        - Interactive
+      defaultPrompt: Hitta bästa verifierbara totalpris inklusive frakt för en produkt i Sverige.
     layout:
       manifest_file: plugin.json
       skills: skills
