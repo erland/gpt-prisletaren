@@ -1,6 +1,6 @@
 """Deterministic, contract-checked build for active Prisletaren distributions.
 
-This remains a project-specific builder, not GPT Byggaren's full canonical builder.
+This uses declarative runtime targets and parity gates, but remains a project-specific builder; the full GPT Byggaren engine is not vendored.
 """
 from pathlib import Path
 import argparse
@@ -11,6 +11,17 @@ import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+BUILD_CONFIG = ROOT / 'build-system.json'
+
+def runtime_targets():
+    config = json.loads(BUILD_CONFIG.read_text(encoding='utf-8'))
+    targets = config['build_system']['runtime_targets']
+    if set(targets) != {'chat_zip', 'plugin'} or not all(isinstance(v, dict) and v.get('enabled') is True for v in targets.values()):
+        raise ValueError('Only explicitly enabled chat_zip and plugin runtimes are supported')
+    if targets['chat_zip'].get('format') != 'instructions' or targets['plugin'].get('format') != 'skills-first':
+        raise ValueError('Runtime packaging contracts do not match the implementation')
+    return targets
+
 EXCLUDE = {'.git', 'dist', '__pycache__', '.pytest_cache', '.venv', 'build', '.mypy_cache'}
 ZIP_DATE = (2020, 1, 1, 0, 0, 0)
 
@@ -31,6 +42,7 @@ def plugin_mapping():
     return [(p.relative_to(base).as_posix(), p) for p in sorted(base.rglob('*')) if p.is_file() and not p.is_symlink() and p.name != 'mcp.json']
 
 def validate_sources(version):
+    runtime_targets()
     canonical = (ROOT/'src/canonical/instructions.md').read_bytes()
     contracts = (ROOT/'src/canonical/contracts.md').read_bytes()
     assert canonical == (ROOT/'src/runtime/chatgpt-chat.md').read_bytes(), 'Chat canonical drift'
@@ -72,11 +84,14 @@ def main():
     if not args.skip_tests:
         result = subprocess.run([sys.executable, '-m', 'unittest', 'discover', '-s', 'tests', '-v'], cwd=ROOT)
         if result.returncode: raise SystemExit(result.returncode)
+    targets = runtime_targets()
     out = ROOT / 'dist'; out.mkdir(exist_ok=True)
     project, chat, plugin = [out / f'prisletaren-{name}-{version}.zip' for name in ('project','chat','plugin')]
     zip_write(project, [(p.relative_to(ROOT).as_posix(), p) for p in files()])
-    zip_write(chat, [('INSTRUCTIONS.md', ROOT/'src/runtime/chatgpt-chat.md'), ('START-HERE.md', ROOT/'src/runtime/START-HERE.md')])
-    zip_write(plugin, plugin_mapping())
+    if targets['chat_zip']['enabled']:
+        zip_write(chat, [('INSTRUCTIONS.md', ROOT/'src/runtime/chatgpt-chat.md'), ('START-HERE.md', ROOT/'src/runtime/START-HERE.md')])
+    if targets['plugin']['enabled']:
+        zip_write(plugin, plugin_mapping())
     validate_archives((project, chat, plugin))
     for p in (project,chat,plugin): print(p)
 
