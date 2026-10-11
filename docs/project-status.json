@@ -1,0 +1,50 @@
+{
+  "project": "Prisletaren",
+  "version": "0.5.0",
+  "date": "2026-10-11",
+  "workflow_state": "github-ready-build-validation-pending-repository-creation",
+  "completed": [
+    "idea-analysis",
+    "canonical-contract",
+    "project-structure",
+    "deterministic-tests",
+    "chatgpt-chat-pilot",
+    "ci-workflows",
+    "live-search-smoke-tests",
+    "source-verification-guardrails",
+    "plugin-skills-distribution",
+    "plugin-offline-parity-tests",
+    "shipping-discovery-policy",
+    "shipping-rule-calculation",
+    "shipping-status-parity-tests",
+    "indicative-aggregator-totals",
+    "merchant-availability-precedence",
+    "order-item-separation",
+    "reproducible-acceptance-fixtures",
+    "deterministic-zip-build",
+    "version-and-parity-gates",
+    "build-contract-tests",
+    "local-ci-equivalent-tests-50"
+  ],
+  "pending": [
+    "create-github-repository-erland-prisletaren",
+    "publish-source-and-verify-actions",
+    "github-release-tag-build",
+    "canonical-gpt-byggaren-distribution-builder-integration",
+    "merchant-level end-to-end checkout validation",
+    "runtime-compatibility-verification",
+    "release-readiness",
+    "plugin-installed-host-acceptance-test",
+    "live-installed-host-retest-after-v0.5"
+  ],
+  "known_limitations": [
+    "Manual live web discovery: no autonomous crawler/API",
+    "Merchant checkout/zipcode may hide shipping",
+    "Search snippets are not verified live store prices",
+    "No reliable live 5-10-row verified results yet",
+    "Skill-only plugin saknar egen webbsökning och installerad hostacceptans är ej verifierad",
+    "Shipping calculations from documented merchant conditions require manually verified applicability; no autonomous checkout",
+    "GitHub repository not created: available GitHub connector lacks create_repository",
+    "Local build is project-specific and is not GPT Byggarens full canonical distribution engine"
+  ]
+}
