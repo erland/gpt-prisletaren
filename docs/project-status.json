@@ -2,7 +2,7 @@
   "project": "Prisletaren",
   "version": "0.5.0",
   "date": "2026-10-11",
-  "workflow_state": "canonical-builder-github-ci-passed-release-not-created",
+  "workflow_state": "five-canonical-runtimes-ci-pending-pr-open-no-release",
   "completed": [
     "idea-analysis",
     "canonical-contract",
@@ -36,7 +36,10 @@
     "complete-gpt-project-yaml",
     "canonical-chat-and-plugin-build-passed-in-github-ci",
     "upstream-distribution-validation-passed-in-github-ci",
-    "canonical-archive-parity-tests-passed"
+    "canonical-archive-parity-tests-passed",
+    "claude-project-build-validated",
+    "claude-skills-build-validated",
+    "opencode-build-validated"
   ],
   "pending": [
     "github-release-tag-build",
@@ -45,7 +48,8 @@
     "release-readiness",
     "plugin-installed-host-acceptance-test",
     "live-installed-host-retest-after-v0.5",
-    "verify-new-pr-ci"
+    "verify-new-pr-ci",
+    "host-installation-acceptance-claude-opencode"
   ],
   "known_limitations": [
     "Manual live web discovery: no autonomous crawler/API",
@@ -54,6 +58,7 @@
     "No reliable live 5-10-row verified results yet",
     "Skill-only plugin saknar egen webbsökning och installerad hostacceptans är ej verifierad",
     "Shipping calculations from documented merchant conditions require manually verified applicability; no autonomous checkout",
-    "Canonical upstream engine is used by CI and release workflow; host-level Plugin compatibility and real checkout shipping remain unverified"
+    "Canonical upstream engine is used by CI and release workflow; host-level Plugin compatibility and real checkout shipping remain unverified",
+    "Claude and OpenCode web search availability depends on separately configured host capabilities."
   ]
 }
