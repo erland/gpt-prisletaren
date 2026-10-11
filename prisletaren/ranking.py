@@ -112,6 +112,17 @@ def classify_offer(identity, offer):
         fees = money(offer.get('mandatory_fees'))
         total = base + ship_cost + fees if base is not None and ship_cost is not None and fees is not None else None
         return 'order_items', 'beställningsvara eller förbeställning; ej lagerförd', total
+    if offer.get('conflicting_price_evidence') is True:
+        return 'uncertain', 'motstridiga prisuppgifter måste avstämmas hos handlaren', None
+    if offer.get('source_type') == 'merchant' and offer.get('observed_at'):
+        try:
+            observed = datetime.fromisoformat(offer['observed_at'].replace('Z', '+00:00'))
+            reference = offer.get('reference_time')
+            now = datetime.fromisoformat(reference.replace('Z', '+00:00')) if reference else datetime.now(timezone.utc)
+            if observed.tzinfo is None or now - observed > timedelta(hours=24) or observed > now + timedelta(minutes=5):
+                return 'uncertain', 'inaktuell eller ogiltig prisobservation', None
+        except (ValueError, TypeError, AttributeError):
+            return 'uncertain', 'ogiltig prisobservationstid', None
     if offer.get('seller_type') == 'marketplace_third_party':
         return 'uncertain', 'tredjepartssäljare kräver separat bedömning', None
     if offer.get('import_fees_unknown'):
