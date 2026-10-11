@@ -13,11 +13,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - run: python -m pip install -r requirements-build.txt
       - run: python -m unittest discover -s tests -v
       - run: python tools/build.py --version 0.5.0 --skip-tests
       - run: python -m unittest tests.test_build_contract -v
-      - name: Install canonical builder dependency
-        run: python -m pip install -r requirements-build.txt
       - name: Canonical distribution build
         run: python tools/upstream_gpt_byggaren/build_distributions.py --project-root . --version 0.5.0 --targets chat_zip,plugin,custom_gpt,claude_project,claude_skills,opencode
       - name: Canonical distribution validation
