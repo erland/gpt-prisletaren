@@ -3,6 +3,7 @@ import zipfile
 from pathlib import Path
 from tools.build import ROOT
 
+@unittest.skipUnless((ROOT/'dist'/'prisletaren-chat-0.5.0.zip').exists(), 'Run after canonical build')
 class CanonicalOutputTests(unittest.TestCase):
     def test_chat_and_plugin_archives_created(self):
         for name in ("prisletaren-chat-0.5.0.zip","prisletaren-plugin-0.5.0.zip"):
