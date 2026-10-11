@@ -2,7 +2,7 @@
   "project": "Prisletaren",
   "version": "0.5.0",
   "date": "2026-10-11",
-  "workflow_state": "six-canonical-runtimes-ci-validated-pr-open-no-release",
+  "workflow_state": "five-canonical-runtimes-ci-pending-pr-open-no-release",
   "completed": [
     "idea-analysis",
     "canonical-contract",
@@ -37,11 +37,9 @@
     "canonical-chat-and-plugin-build-passed-in-github-ci",
     "upstream-distribution-validation-passed-in-github-ci",
     "canonical-archive-parity-tests-passed",
-    "custom-gpt-build-validated",
     "claude-project-build-validated",
     "claude-skills-build-validated",
-    "opencode-build-validated",
-    "six-runtime-regression-ci-passed"
+    "opencode-build-validated"
   ],
   "pending": [
     "github-release-tag-build",
@@ -51,9 +49,7 @@
     "plugin-installed-host-acceptance-test",
     "live-installed-host-retest-after-v0.5",
     "verify-new-pr-ci",
-    "review-merge-six-runtime-pr",
-    "host-installation-acceptance-custom-claude-opencode",
-    "confirm-custom-gpt-instruction-host-limit"
+    "host-installation-acceptance-claude-opencode"
   ],
   "known_limitations": [
     "Manual live web discovery: no autonomous crawler/API",
@@ -63,7 +59,6 @@
     "Skill-only plugin saknar egen webbsökning och installerad hostacceptans är ej verifierad",
     "Shipping calculations from documented merchant conditions require manually verified applicability; no autonomous checkout",
     "Canonical upstream engine is used by CI and release workflow; host-level Plugin compatibility and real checkout shipping remain unverified",
-    "Custom GPT canonical instructions are 9191 characters; builder configured for 12000; actual ChatGPT GPT editor capacity/acceptance not host-tested.",
     "Claude and OpenCode web search availability depends on separately configured host capabilities."
   ]
 }
