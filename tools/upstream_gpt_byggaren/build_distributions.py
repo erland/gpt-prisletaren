@@ -670,6 +670,10 @@ def plugin_manifest(cfg: dict, version: str) -> dict:
         if isinstance(value, str) and value.strip():
             manifest[manifest_key] = value.strip()
 
+    interface = cfg.get("runtime", {}).get("plugin", {}).get("interface")
+    if isinstance(interface, dict):
+        manifest["extensions"] = {"com.openai": {"interface": interface}}
+
     missing = [key for key in ("name", "version", "description") if not manifest.get(key)]
     if missing:
         raise SystemExit("Plugin manifest requires canonical metadata: " + ", ".join(missing))
