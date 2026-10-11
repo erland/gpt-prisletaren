@@ -2,7 +2,7 @@
   "project": "Prisletaren",
   "version": "0.5.0",
   "date": "2026-10-11",
-  "workflow_state": "canonical-builder-dependencies-staged-validation-pending",
+  "workflow_state": "canonical-builder-github-ci-passed-release-not-created",
   "completed": [
     "idea-analysis",
     "canonical-contract",
@@ -32,20 +32,20 @@
     "runtime-target-contract-tests",
     "upstream-builder-source-vendored",
     "upstream-validator-source-vendored",
-    "upstream-dependency-import-tests"
+    "upstream-dependency-import-tests",
+    "complete-gpt-project-yaml",
+    "canonical-chat-and-plugin-build-passed-in-github-ci",
+    "upstream-distribution-validation-passed-in-github-ci",
+    "canonical-archive-parity-tests-passed"
   ],
   "pending": [
     "github-release-tag-build",
-    "canonical-gpt-byggaren-distribution-builder-integration",
     "merchant-level end-to-end checkout validation",
     "runtime-compatibility-verification",
     "release-readiness",
     "plugin-installed-host-acceptance-test",
     "live-installed-host-retest-after-v0.5",
-    "verify-new-pr-ci",
-    "integrate-full-canonical-distribution-engine-with-dependencies",
-    "provide-full-gpt-project-yaml-and-runtime-templates",
-    "run-upstream-build-and-validate-distributions-in-ci"
+    "verify-new-pr-ci"
   ],
   "known_limitations": [
     "Manual live web discovery: no autonomous crawler/API",
@@ -54,7 +54,6 @@
     "No reliable live 5-10-row verified results yet",
     "Skill-only plugin saknar egen webbsökning och installerad hostacceptans är ej verifierad",
     "Shipping calculations from documented merchant conditions require manually verified applicability; no autonomous checkout",
-    "Local build is project-specific and is not GPT Byggarens full canonical distribution engine",
-    "Upstream canonical scripts vendored but not activated; missing gpt-project.yaml and runtime templates"
+    "Canonical upstream engine is used by CI and release workflow; host-level Plugin compatibility and real checkout shipping remain unverified"
   ]
 }
