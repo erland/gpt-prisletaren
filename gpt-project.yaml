@@ -58,19 +58,7 @@ runtime:
     templates:
       readme: src/templates/README.plugin.md
   custom_gpt:
-    enabled: true
-    instruction:
-      mode: identical
-      max_characters: 12000
-    knowledge:
-      strategy: prioritize
-      max_files: 20
-    builder:
-      runtime_contract: builder/runtime-contract.json
-    templates:
-      capabilities: src/templates/custom-capabilities.md
-      readme: src/templates/custom-readme.md
-      compatibility: src/templates/custom-compatibility.md
+    enabled: false
   claude:
     enabled: true
     project:
@@ -100,7 +88,6 @@ build_system:
     - project
     - chat_zip
     - plugin
-    - custom_gpt
     - claude_project
     - claude_skills
     - opencode
@@ -117,12 +104,6 @@ build_system:
       builder: plugin
       artifact_type: plugin_zip
       filename_pattern: "<project-id>-plugin-<version>.zip"
-    custom_gpt:
-      runtime_id: chatgpt_custom
-      runtime_key: custom_gpt
-      builder: custom_gpt
-      artifact_type: custom_gpt_zip
-      filename_pattern: "<project-id>-custom-gpt-<version>.zip"
     claude_project:
       runtime_id: claude_project
       runtime_key: claude
