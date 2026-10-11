@@ -18,7 +18,7 @@ jobs:
       - run: python tools/build.py --version 0.5.0 --skip-tests
       - run: python -m unittest tests.test_build_contract -v
       - name: Canonical distribution build
-        run: python tools/upstream_gpt_byggaren/build_distributions.py --project-root . --version 0.5.0 --targets chat_zip,plugin,custom_gpt,claude_project,claude_skills,opencode
+        run: python tools/upstream_gpt_byggaren/build_distributions.py --project-root . --version 0.5.0 --targets chat_zip,plugin,claude_project,claude_skills,opencode
       - name: Canonical distribution validation
         run: python tools/upstream_gpt_byggaren/validate_distributions.py --project-root .
       - name: Verify canonical output contracts
