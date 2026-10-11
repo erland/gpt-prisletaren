@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "build_system": {
+    "runtime_targets": {
+      "chat_zip": {
+        "enabled": true,
+        "format": "instructions"
+      },
+      "plugin": {
+        "enabled": true,
+        "format": "skills-first"
+      }
+    },
+    "inactive_runtimes": [
+      "chatgpt_custom",
+      "claude_projects",
+      "claude_skills",
+      "opencode"
+    ],
+    "note": "Declared runtime targets for Prisletaren. Project-specific builder, not full GPT Byggaren distribution engine."
+  }
+}
