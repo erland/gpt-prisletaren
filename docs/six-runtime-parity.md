@@ -12,4 +12,4 @@ Alla aktiva runtimepaket genereras från `src/canonical/instructions.md` via GPT
 
 Runtimekontrakten får aldrig lova fungerande livepriser i en miljö som saknar webbverktyg. En zipfil är ingen hostinstallationsverifiering. Ingen runtime får upphöja gammal sökindexdata eller indikator från aggregator till kassaverifierad totalsumma.
 
-Kontroller i CI: enhetstester, sex runtime-builds, GPT Byggarens validator, canonical innehållsparitet, arkivlayout och befintliga Chat/Plugin-test.
+Kontroller i CI: enhetstester, fem runtime-builds, GPT Byggarens validator, canonical innehållsparitet, arkivlayout och befintliga Chat/Plugin-test.
