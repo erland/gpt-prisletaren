@@ -15,6 +15,8 @@ jobs:
           python-version: '3.11'
       - run: python -m pip install -r requirements-build.txt
       - name: Canonical GPT Byggaren v1.6.19 lint
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
         run: python tools/upstream_gpt_byggaren/lint_gpt_project.py --project-root . --json
       - run: python -m unittest discover -s tests -v
       - run: python tools/build.py --version 0.5.0 --skip-tests
