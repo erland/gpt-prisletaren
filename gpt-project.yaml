@@ -36,6 +36,30 @@ skills:
         - src/canonical/contracts.md
       assets: []
       scripts: []
+    - id: produktidentifiering
+      name: produktidentifiering
+      description: Identifiera exakt produktmodell och variant före prisjämförelse.
+      references:
+        - src/skills/produktidentifiering.md
+        - src/canonical/contracts.md
+      assets: []
+      scripts: []
+    - id: erbjudandeverifiering
+      name: erbjudandeverifiering
+      description: Kontrollera handlarnas aktuella erbjudanden, lager, frakt och evidens.
+      references:
+        - src/skills/erbjudandeverifiering.md
+        - src/canonical/contracts.md
+      assets: []
+      scripts: []
+    - id: prisrankning
+      name: prisrankning
+      description: Rangordna jämförbara totalpriser och redovisa osäkerhet.
+      references:
+        - src/skills/prisrankning.md
+        - src/canonical/contracts.md
+      assets: []
+      scripts: []
 runtime:
   primary: none
   chat_zip:
