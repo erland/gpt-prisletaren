@@ -38,6 +38,7 @@ skills:
       scripts: []
     - id: produktidentifiering
       name: produktidentifiering
+      source: src/skills/produktidentifiering.md
       description: Identifiera exakt produktmodell och variant före prisjämförelse.
       references:
         - src/skills/produktidentifiering.md
@@ -46,6 +47,7 @@ skills:
       scripts: []
     - id: erbjudandeverifiering
       name: erbjudandeverifiering
+      source: src/skills/erbjudandeverifiering.md
       description: Kontrollera handlarnas aktuella erbjudanden, lager, frakt och evidens.
       references:
         - src/skills/erbjudandeverifiering.md
@@ -54,6 +56,7 @@ skills:
       scripts: []
     - id: prisrankning
       name: prisrankning
+      source: src/skills/prisrankning.md
       description: Rangordna jämförbara totalpriser och redovisa osäkerhet.
       references:
         - src/skills/prisrankning.md
