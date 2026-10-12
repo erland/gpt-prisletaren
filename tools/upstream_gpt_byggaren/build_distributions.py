@@ -216,7 +216,8 @@ def build_chat(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
     out = build_root / "chat"
     ensure_clean_dir(out)
 
-    bundle_distribution_engine(root, out)
+    if cfg.get("project", {}).get("id") == "gpt-byggaren":
+        bundle_distribution_engine(root, out)
     assistant = out / "assistant"
     policies = assistant / "policies"
     policies.mkdir(parents=True)
