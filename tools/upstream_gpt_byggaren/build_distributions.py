@@ -10,6 +10,15 @@ import shutil
 import sys
 import zipfile
 from pathlib import Path
+# Support CLI execution and direct importlib loading used by regression tests.
+import importlib.util as _skill_importlib
+_skill_module_path = Path(__file__).resolve().parent / "lib" / "canonical_skill_sources.py"
+_skill_spec = _skill_importlib.spec_from_file_location("canonical_skill_sources", _skill_module_path)
+_skill_module = _skill_importlib.module_from_spec(_skill_spec)
+_skill_spec.loader.exec_module(_skill_module)
+projected_instruction = _skill_module.projected_instruction
+skill_instruction = _skill_module.skill_instruction
+is_modular = _skill_module.is_modular
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(SCRIPTS_DIR) not in sys.path:
@@ -188,23 +197,19 @@ def copy_portable_skill_modules(root: Path, cfg: dict, target: Path) -> list[str
 
 
 def bundle_distribution_engine(root: Path, destination: Path) -> None:
-    """Package the vendored upstream engine and project config as portable resources."""
+    """Include the offline project generator in a runtime distribution."""
     engine = destination / "distribution-engine"
     engine.mkdir(parents=True, exist_ok=True)
-    vendor = root / "tools" / "upstream_gpt_byggaren"
-    required = (
-        vendor / "build_distributions.py",
-        vendor / "validate_distributions.py",
-        vendor / "lib" / "project_model.py",
-        root / "gpt-project.yaml",
-    )
-    if not all(p.is_file() for p in required):
+    required = ("scripts/build_distributions.py", "scripts/lib/project_model.py", "gpt-project.yaml")
+    if any(not (root / relative).is_file() for relative in required):
         raise FileNotFoundError("Canonical distribution engine is incomplete")
     copy_file(root / "gpt-project.yaml", engine / "gpt-project.yaml")
-    copy_tree_filtered(vendor, engine / "scripts")
-    templates = root / "src" / "templates"
-    if templates.exists():
-        copy_tree_filtered(templates, engine / "templates")
+    for folder in ("scripts", "templates"):
+        for source_file in sorted((root / folder).rglob("*")):
+            if not source_file.is_file() or "__pycache__" in source_file.parts or source_file.suffix == ".pyc":
+                continue
+            relative = source_file.relative_to(root)
+            copy_file(source_file, engine / relative)
 
 
 def build_chat(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
@@ -217,7 +222,7 @@ def build_chat(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
     policies.mkdir(parents=True)
 
     instr_src = root / cfg["instructions"]["canonical"]
-    copy_file(instr_src, assistant / "instructions.md")
+    (assistant / "instructions.md").write_text(projected_instruction(root, cfg, canonical_skill_definitions(cfg)), encoding="utf-8")
     copy_portable_skill_modules(root, cfg, assistant / "skills")
 
     starters_root = root / cfg["structure"]["conversation_starters"]["path"]
@@ -532,7 +537,8 @@ def build_claude(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
     instr_src = root / cfg["instructions"]["canonical"]
     instructions_ref = runtime_cfg["project"]["instructions"]
     instructions_path = out / instructions_ref
-    copy_file(instr_src, instructions_path)
+    instructions_path.parent.mkdir(parents=True, exist_ok=True)
+    instructions_path.write_text(projected_instruction(root, cfg, canonical_skill_definitions(cfg)), encoding="utf-8")
     knowledge_root = root / cfg["knowledge_architecture"]["canonical_root"]
     knowledge_ref = runtime_cfg["project"]["knowledge"]
     knowledge_target = out / knowledge_ref
@@ -574,24 +580,50 @@ def build_claude(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
 
 
 
+def expose_canonical_engine_skill_files(engine_root: Path, skill_dir: Path) -> None:
+    """Expose original canonical engine files as ordinary Skill resources."""
+    for file in sorted(engine_root.rglob("*")):
+        if not file.is_file():
+            continue
+        relative = file.relative_to(engine_root)
+        category = "scripts" if relative.parts[0] == "scripts" else "assets"
+        copy_file(file, skill_dir / category / "canonical-engine" / relative)
+
+
 def build_claude_skills(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
     """Build a Claude Skills distribution with the canonical portable resources."""
     out = build_root / "claude-skills"
     ensure_clean_dir(out)
-    canonical_instruction = (root / cfg["instructions"]["canonical"]).read_text(encoding="utf-8")
+    canonical_instruction = projected_instruction(root, cfg, canonical_skill_definitions(cfg))
     built_skills = []
     for skill in canonical_skill_definitions(cfg):
         skill_id = skill["id"]
         skill_dir = out / "skills" / skill_id
         resources = resolve_plugin_skill_resources(root, cfg, skill)
         _copy_skill_resources(root, skill_dir, resources)
+        if cfg.get("project", {}).get("id") == "gpt-byggaren" and skill_id == "distribution-and-parity":
+            from package_distribution_engine import package as package_engine
+            staging = build_root / "claude-skills-engine"
+            ensure_clean_dir(staging)
+            bundle_distribution_engine(root, staging)
+            expose_canonical_engine_skill_files(staging / "distribution-engine", skill_dir)
+            engine_root = staging / "distribution-engine"
+            package_engine(
+                root=root,
+                version=version,
+                output=skill_dir / "assets" / "gpt-byggaren-engine.zip",
+            )
+        if cfg.get("project", {}).get("id") == "gpt-byggaren":
+            if skill_id == "distribution-and-parity":
+                copy_file(root / "scripts" / "selftest_distribution_engine.py",
+                          skill_dir / "scripts" / "selftest_distribution_engine.py")
         compiled = dict(skill)
         compiled.update(resources)
         skill_dir.mkdir(parents=True, exist_ok=True)
         (skill_dir / "SKILL.md").write_text(
             compile_skill_markdown(
                 compiled,
-                canonical_instruction=canonical_instruction,
+                canonical_instruction=skill_instruction(root, cfg, canonical_skill_definitions(cfg), skill),
                 include_canonical_behavior=True,
                 runtime_requirements=plugin_script_runtime_requirements(cfg),
             ),
@@ -605,7 +637,7 @@ def build_claude_skills(root: Path, cfg: dict, build_root: Path, version: str) -
         "does not verify host execution.\\n",
         encoding="utf-8",
     )
-    (out / "VERSION").write_text(version + "\\n", encoding="utf-8")
+    (out / "VERSION").write_text(version + "\n", encoding="utf-8")
     (out / "runtime-contract.json").write_text(
         json.dumps(claude_skills_runtime_contract(cfg, built_skills), ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
@@ -670,10 +702,6 @@ def plugin_manifest(cfg: dict, version: str) -> dict:
         if isinstance(value, str) and value.strip():
             manifest[manifest_key] = value.strip()
 
-    interface = cfg.get("runtime", {}).get("plugin", {}).get("interface")
-    if isinstance(interface, dict):
-        manifest["extensions"] = {"com.openai": {"interface": interface}}
-
     missing = [key for key in ("name", "version", "description") if not manifest.get(key)]
     if missing:
         raise SystemExit("Plugin manifest requires canonical metadata: " + ", ".join(missing))
@@ -721,15 +749,14 @@ def resolve_plugin_skill_resources(root: Path, cfg: dict, skill: dict) -> dict[s
 
     Explicit skill metadata wins per resource class. When a class is not declared,
     Plugin v1 uses a conservative project-level fallback:
-    canonical Knowledge becomes references, templates become assets, and only
-    explicitly declared runtime tool scripts become scripts.
+    canonical Knowledge becomes references, but assets are only included when
+    explicitly declared by the Skill. Only declared runtime tool scripts become scripts.
     """
     knowledge_root = root / cfg.get("knowledge_architecture", {}).get("canonical_root", "knowledge")
-    templates_root = root / cfg.get("structure", {}).get("templates", {}).get("path", "templates")
 
     fallback = {
         "references": _project_relative_files(root, knowledge_root, exclude_names={"KNOWLEDGE.md"}),
-        "assets": _project_relative_files(root, templates_root, exclude_names={"README.md"}),
+        "assets": [],
         "scripts": _declared_runtime_script_refs(cfg),
     }
 
@@ -862,7 +889,7 @@ def build_opencode_skills(root: Path, cfg: dict, out: Path) -> list[str]:
         return []
 
     skill_root = out / skills_cfg.get("directory", ".opencode/skills")
-    canonical_instruction = (root / cfg["instructions"]["canonical"]).read_text(encoding="utf-8")
+    canonical_instruction = projected_instruction(root, cfg, canonical_skill_definitions(cfg))
     built: list[str] = []
 
     for skill in canonical_skill_definitions(cfg):
@@ -883,7 +910,8 @@ def build_opencode_skills(root: Path, cfg: dict, out: Path) -> list[str]:
         body = compile_skill_markdown(
             skill,
             compatibility="opencode",
-            canonical_instruction=canonical_instruction,
+            canonical_instruction=skill_instruction(root, cfg, canonical_skill_definitions(cfg), skill),
+            include_canonical_behavior=is_modular(cfg),
         )
         skill_dir.mkdir(parents=True, exist_ok=True)
         (skill_dir / "SKILL.md").write_text(body, encoding="utf-8")
@@ -960,9 +988,8 @@ def build_plugin(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
     out = build_root / "plugin"
     ensure_clean_dir(out)
     write_plugin_manifest(out, cfg, version)
-    bundle_distribution_engine(root, out)
 
-    canonical_instruction = (root / cfg["instructions"]["canonical"]).read_text(encoding="utf-8")
+    canonical_instruction = projected_instruction(root, cfg, canonical_skill_definitions(cfg))
     built_skills: list[str] = []
     for skill in canonical_skill_definitions(cfg):
         skill_id = skill["id"]
@@ -973,15 +1000,95 @@ def build_plugin(root: Path, cfg: dict, build_root: Path, version: str) -> Path:
         compiled_skill = dict(skill)
         compiled_skill.update(resources)
         skill_dir.mkdir(parents=True, exist_ok=True)
-        (skill_dir / "SKILL.md").write_text(
-            compile_skill_markdown(
-                compiled_skill,
-                canonical_instruction=canonical_instruction,
-                include_canonical_behavior=True,
-                runtime_requirements=plugin_script_runtime_requirements(cfg),
-            ),
-            encoding="utf-8",
+        skill_markdown = compile_skill_markdown(
+            compiled_skill,
+            canonical_instruction=skill_instruction(root, cfg, canonical_skill_definitions(cfg), skill),
+            include_canonical_behavior=True,
+            runtime_requirements=plugin_script_runtime_requirements(cfg),
         )
+        if cfg.get("project", {}).get("id") == "gpt-byggaren" and skill_id == "distribution-and-parity":
+            skill_markdown += (
+                "\\n## Mandatory engine access self-test\\n\\n"
+                "Before building a generated GPT, run "
+                "`scripts/selftest_distribution_engine.py --source <materialized-engine-root>` "
+                "in a compatible Python workspace. The self-test checks source files, "
+                "materialization, SHA-256 integrity, the original installer and a "
+                "six-archive smoke build. Report the first failed stage and its "
+                "error verbatim. If no writable workspace or Python execution "
+                "is available, report materialize/installer as unavailable; "
+                "never claim self-test success or invent an alternative packager.\\n"
+            )
+        if cfg.get("project", {}).get("id") == "gpt-byggaren":
+            is_ci_version = version == "0.0.0-ci" or version.endswith("-ci")
+            release_link = (
+                "https://github.com/erland/gpt-byggaren/releases/download/"
+                f"v{version}/gpt-byggaren-engine-{version}.zip"
+            )
+            delivery_instruction = (
+                "This is a CI/test Plugin version. Do not reference GitHub Actions, "
+                "CI artifacts or pretend a Release asset exists. If an actual downloadable "
+                "file cannot be exported, simply ask the user to attach "
+                f"`gpt-byggaren-engine-{version}.zip` and continue in source-only fallback."
+                if is_ci_version else
+                "For a released Plugin, present this exact-version direct download "
+                "link to the Engine ZIP in the corresponding GitHub Release: "
+                + release_link
+                + " . Tell the user to open this link, download the Engine ZIP, attach the ZIP in this conversation, and then say Gör nästa steg. Do not use latest or a different release version."
+            )
+            skill_markdown += (
+                "\n## Plugin engine preflight and handoff\n\n"
+                "At the first actual GPT project creation or resumption, run a "
+                "one-time, non-blocking engine access preflight. Do not check on "
+                "unrelated questions or repeatedly on every turn. Test whether "
+                f"a user-attached `gpt-byggaren-engine-{version}.zip` is a real readable "
+                "file in the Python workspace. "
+                "If missing, explain the actual download-and-attach steps in the conversation language, not merely the Engine name. "
+                "If accessible, run the unchanged canonical integrity checks and "
+                "self-test and reuse the engine in the current workspace. "
+                "The Engine ZIP is distributed separately through the matching "
+                "release, not embedded in this Plugin. Never invent a sandbox "
+                "download or claim an inaccessible file was exported. "
+                + delivery_instruction
+                + " If the user does not attach the file, continue with explicitly "
+                  "unverified declarative source-only fallback. Never use a "
+                  "GitHub Python downloader, alternative packager or MCP.\n"
+            )
+            if skill_id == "distribution-and-parity":
+                copy_file(root / "scripts" / "selftest_distribution_engine.py",
+                          skill_dir / "scripts" / "selftest_distribution_engine.py")
+        # Generic Engine handoff for generated GPT projects; no embedded scripts.
+        if cfg.get("project", {}).get("id") != "gpt-byggaren":
+            from lib.engine_package import engine_config, engine_filename
+            if engine_config(cfg):
+                engine_name = engine_filename(cfg, version)
+                is_test = version.endswith("-ci") or version.startswith("0.0.0-")
+                engine_cfg = cfg["engine"]
+                release_repo = engine_cfg.get("release_repository")
+                link = (
+                    f"https://github.com/{release_repo}/releases/download/v{version}/{engine_name}"
+                    if isinstance(release_repo, str) and "/" in release_repo and not is_test
+                    else None
+                )
+                handoff = (
+                    f"Direct Engine ZIP download for this exact release: {link}. "
+                    if link else
+                    "No verified release download link is configured for this build. "
+                )
+                skill_markdown += (
+                    "\n## Executable Engine ZIP preflight\n\n"
+                    "At the first task requiring executable scripts, check once "
+                    f"for a real user-attached `{engine_name}` file in the Python workspace. "
+                    "The Plugin does not embed the executable engine. "
+                    + handoff +
+                    "If missing, ask once for the Engine ZIP and permit non-executable "
+                    "work without falsely claiming a completed build. "
+                    "Before execution, verify engine-package.json, expected engine_id "
+                    f"({cfg['project']['id']}), version ({version}), file hashes, "
+                    "and safe relative paths; execute only the declared selftest "
+                    f"({engine_cfg['selftest']}) in a compatible workspace. "
+                    "Never invent an archive, link, test result or replacement engine.\n"
+                )
+        (skill_dir / "SKILL.md").write_text(skill_markdown, encoding="utf-8")
         built_skills.append(skill_id)
 
     if not built_skills:
@@ -1133,7 +1240,7 @@ def build_opencode(root: Path, cfg: dict, build_root: Path, version: str) -> Pat
 
     runtime_cfg = cfg["runtime"]["opencode"]
 
-    canonical_instruction = (root / cfg["instructions"]["canonical"]).read_text(encoding="utf-8")
+    canonical_instruction = projected_instruction(root, cfg, canonical_skill_definitions(cfg))
     agents_path = out / runtime_cfg["layout"]["instructions"]
     agents_path.write_text(
         canonical_instruction.rstrip()
@@ -1264,7 +1371,7 @@ def write_checksums(dist: Path) -> None:
 
 def artifact_type_for_distribution(cfg: dict, filename: str, version: str) -> str:
     project_id = cfg["project"]["id"]
-    if filename == f"{project_id}-project.zip":
+    if filename == f"{project_id}-project-{version}.zip":
         return "project_zip"
 
     for target_cfg in (cfg.get("build_system", {}).get("runtime_targets") or {}).values():
@@ -1341,6 +1448,10 @@ def main() -> int:
             "Reconstructed project is not release-ready: complete and verify "
             "runtime parity before distribution build or validation"
         )
+    from lib.project_resource_audit import validate_project_resources
+    missing_resources = validate_project_resources(root, cfg)
+    if missing_resources:
+        raise SystemExit("Incomplete declared GPT project resources:\n" + "\n".join(missing_resources))
     build_root = root / "build"
     dist = root / "dist"
     build_root.mkdir(exist_ok=True)
@@ -1394,8 +1505,12 @@ def main() -> int:
             )
 
     if "project" in targets:
-        project_zip = dist / f"{project_id}-project.zip"
+        project_zip = dist / f"{project_id}-project-{version}.zip"
         stable_write_zip(project_zip, root, project_files(root))
+
+    from lib.engine_package import package_engine
+    if "plugin" in targets and cfg.get("runtime", {}).get("plugin", {}).get("enabled"):
+        package_engine(root, cfg, version, dist)
 
     write_checksums(dist)
     write_delivery_manifest(dist, cfg, version)
