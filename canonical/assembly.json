@@ -1,0 +1,39 @@
+{
+  "sources": {
+    "core": "src/canonical/core.md",
+    "prisjamforelse": "src/canonical/skills/prisjamforelse.md",
+    "produktidentifiering": "src/canonical/skills/produktidentifiering.md",
+    "erbjudandeverifiering": "src/canonical/skills/erbjudandeverifiering.md",
+    "prisrankning": "src/canonical/skills/prisrankning.md"
+  },
+  "sections": [
+    {
+      "owner": "produktidentifiering",
+      "title": "Operativ kärna"
+    },
+    {
+      "owner": "core",
+      "title": "Samtalsstil"
+    },
+    {
+      "owner": "prisjamforelse",
+      "title": "Verktyg och kontrakt"
+    },
+    {
+      "owner": "erbjudandeverifiering",
+      "title": "Aktualitet och evidens"
+    },
+    {
+      "owner": "erbjudandeverifiering",
+      "title": "Fraktsökning och beräkningsbevis"
+    },
+    {
+      "owner": "prisrankning",
+      "title": "v0.5.0 – indikativa totalpriser och tillgänglighet"
+    },
+    {
+      "owner": "erbjudandeverifiering",
+      "title": "Evidensgrind efter acceptanstesterna"
+    }
+  ]
+}

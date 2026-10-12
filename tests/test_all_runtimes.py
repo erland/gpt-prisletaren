@@ -32,7 +32,14 @@ class PeerRuntimeTests(unittest.TestCase):
                 with zipfile.ZipFile(archive) as z:
                     self.assertIsNone(z.testzip())
                     self.assertEqual(len(z.namelist()),len(set(z.namelist())))
-                    self.assertIn(canonical.strip(), z.read(entry).decode("utf-8"))
+                    rendered = z.read(entry).decode("utf-8")
+                    if runtime in ("plugin", "claude-skills"):
+                        self.assertIn((ROOT/"src/canonical/core.md").read_text().strip(), rendered)
+                        self.assertIn((ROOT/"src/canonical/skills/prisjamforelse.md").read_text().strip(), rendered)
+                        for skill_id in ("produktidentifiering","erbjudandeverifiering","prisrankning"):
+                            self.assertIn(f"skills/{skill_id}/SKILL.md", z.namelist())
+                    else:
+                        self.assertIn(canonical.strip(), rendered)
                     self.assertIn("MANIFEST.json",z.namelist())
                     manifest=json.loads(z.read("MANIFEST.json"))
                     self.assertEqual(manifest["runtime_id"], "prisletaren-" + ({"chat":"chat","plugin":"plugin","claude-project":"claude","claude-skills":"claude-skills","opencode":"opencode"}[runtime]))

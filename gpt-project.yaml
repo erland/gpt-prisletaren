@@ -5,7 +5,10 @@ project:
   author: Prisletaren-projektet
   repository: https://github.com/erland/gpt-prisletaren
 instructions:
+  mode: modular_skills
   canonical: src/canonical/instructions.md
+  core: src/canonical/core.md
+  assembly: canonical/assembly.json
 structure:
   conversation_starters:
     path: src/conversation-starters
@@ -18,21 +21,64 @@ structure:
 knowledge_architecture:
   canonical_root: src/knowledge
 capabilities:
+  contract_version: 1
+  recommendation_mode: inferred_from_use_case
   requirements:
     web:
       level: required
     code_execution:
       level: optional
 workspace_state:
-  persistent: false
+  contract_version: 1
+  workspace:
+    requirement: not_required
+    persistence: not_required
+    portable: true
+    separate_from_assistant: true
+  state:
+    requirement: not_required
+    persistence: ephemeral
+    authority: none
 tools:
-  definitions: []
+  contract_version: 1
+  tools: []
 skills:
+  contract_version: 1
+  schema: schemas/skill-contract.schema.json
+  mode: explicit
   definitions:
     - id: prisjamforelse
       name: prisjamforelse
+      source: src/canonical/skills/prisjamforelse.md
       description: Hitta rätt produktvariant och jämför aktuella totalpriser inklusive frakt i Sverige.
       references:
+        - src/canonical/contracts.md
+      assets: []
+      scripts: []
+    - id: produktidentifiering
+      name: produktidentifiering
+      source: src/canonical/skills/produktidentifiering.md
+      description: Identifiera exakt produktmodell och variant före prisjämförelse.
+      references:
+        - src/skills/produktidentifiering.md
+        - src/canonical/contracts.md
+      assets: []
+      scripts: []
+    - id: erbjudandeverifiering
+      name: erbjudandeverifiering
+      source: src/canonical/skills/erbjudandeverifiering.md
+      description: Kontrollera handlarnas aktuella erbjudanden, lager, frakt och evidens.
+      references:
+        - src/skills/erbjudandeverifiering.md
+        - src/canonical/contracts.md
+      assets: []
+      scripts: []
+    - id: prisrankning
+      name: prisrankning
+      source: src/canonical/skills/prisrankning.md
+      description: Rangordna jämförbara totalpriser och redovisa osäkerhet.
+      references:
+        - src/skills/prisrankning.md
         - src/canonical/contracts.md
       assets: []
       scripts: []
