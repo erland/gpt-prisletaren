@@ -1,0 +1,5 @@
+project: prisletaren
+version: 0.5.0
+state: migration-validation
+builder_version: 1.6.19
+release_ready: false
