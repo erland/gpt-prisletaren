@@ -21,16 +21,31 @@ structure:
 knowledge_architecture:
   canonical_root: src/knowledge
 capabilities:
+  contract_version: 1
+  recommendation_mode: inferred_from_use_case
   requirements:
     web:
       level: required
     code_execution:
       level: optional
 workspace_state:
-  persistent: false
+  contract_version: 1
+  workspace:
+    requirement: not_required
+    persistence: not_required
+    portable: true
+    separate_from_assistant: true
+  state:
+    requirement: not_required
+    persistence: ephemeral
+    authority: none
 tools:
-  definitions: []
+  contract_version: 1
+  tools: []
 skills:
+  contract_version: 1
+  schema: schemas/skill-contract.schema.json
+  mode: explicit
   definitions:
     - id: prisjamforelse
       name: prisjamforelse
