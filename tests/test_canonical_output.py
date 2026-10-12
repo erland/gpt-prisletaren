@@ -22,7 +22,9 @@ class CanonicalOutputTests(unittest.TestCase):
             self.assertEqual(z.read("assistant/instructions.md"),(ROOT/"src/canonical/instructions.md").read_bytes())
     def test_plugin_canonical(self):
         with zipfile.ZipFile(ROOT/"dist"/f"prisletaren-plugin-{VERSION}.zip") as z:
-            self.assertIn((ROOT/"src/canonical/instructions.md").read_bytes(),z.read("skills/prisjamforelse/SKILL.md"))
+            skill=z.read("skills/prisjamforelse/SKILL.md")
+            self.assertIn((ROOT/"src/canonical/core.md").read_bytes().strip(),skill)
+            self.assertIn((ROOT/"src/canonical/skills/prisjamforelse.md").read_bytes().strip(),skill)
             self.assertFalse(any(p.endswith("mcp.json") for p in z.namelist()))
             self.assertIn("plugin.json",z.namelist())
             manifest=json.loads(z.read("plugin.json"))
