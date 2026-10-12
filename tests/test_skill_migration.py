@@ -16,6 +16,8 @@ class SkillMigrationContracts(unittest.TestCase):
 
     def test_canonical_source_remains_monolithic_during_transition(self):
         self.assertEqual(self.config["instructions"]["canonical"], "src/canonical/instructions.md")
+        self.assertEqual(self.config["instructions"]["mode"], "modular_skills")
+        self.assertEqual(self.config["instructions"]["assembly"], "canonical/assembly.json")
         text = (ROOT / self.config["instructions"]["canonical"]).read_text(encoding="utf-8")
         for phrase in ("ProduktIdentity", "Verifierad", "Beräknad", "Indikativ"):
             # ProductIdentity may only appear in the domain contracts; guard behavior via canonical terms.
@@ -28,9 +30,9 @@ class SkillMigrationContracts(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
         self.assertIn("prisjamforelse", ids)  # legacy entrypoint, retained temporarily
         expected = {
-            "produktidentifiering": "src/skills/produktidentifiering.md",
-            "erbjudandeverifiering": "src/skills/erbjudandeverifiering.md",
-            "prisrankning": "src/skills/prisrankning.md",
+            "produktidentifiering": "src/canonical/skills/produktidentifiering.md",
+            "erbjudandeverifiering": "src/canonical/skills/erbjudandeverifiering.md",
+            "prisrankning": "src/canonical/skills/prisrankning.md",
         }
         canonical_path = self.config["instructions"]["canonical"]
         for item in definitions:
@@ -41,9 +43,14 @@ class SkillMigrationContracts(unittest.TestCase):
             self.assertEqual(item.get("source"), source)
             self.assertNotEqual(source, canonical_path)
             body = (ROOT / source).read_text(encoding="utf-8")
-            self.assertIn("Ansvar", body)
-            self.assertIn("Gräns", body)
-            self.assertIn("src/canonical/", body)
+            self.assertTrue(body.startswith("## "))
+
+    def test_lossless_modular_projection(self):
+        import sys
+        sys.path.insert(0, str(ROOT / "tools/upstream_gpt_byggaren"))
+        from lib.canonical_skill_sources import projected_instruction
+        actual = projected_instruction(ROOT, self.config, self.config["skills"]["definitions"])
+        self.assertEqual(actual, (ROOT / "src/canonical/instructions.md").read_text(encoding="utf-8"))
 
     def test_five_distribution_targets_unchanged(self):
         targets = self.config["build_system"]["targets"]
